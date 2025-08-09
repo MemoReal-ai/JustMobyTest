@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
   <MaxHealth>k__BackingField: 100
-  <Speed>k__BackingField: 3
+  <MaxSpeed>k__BackingField: 20
   <CurrentDamage>k__BackingField: 5

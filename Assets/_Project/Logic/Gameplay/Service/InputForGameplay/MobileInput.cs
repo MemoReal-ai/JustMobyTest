@@ -1,17 +1,27 @@
-using UnityEngine;
+using System;
 
 namespace _Project.Logic.Gameplay.Service.InputForGameplay
 {
     public class MobileInput : IInput
     {
+        public Action OnShoot { get; set; }
+        
+        private readonly Joystick _joystick;
+        public MobileInput(Joystick joystick)
+        {
+            _joystick = joystick;
+        }
+        
         public float GetAxisHorizontal()
         {
-            return Input.GetAxis("Horizontal");
+            var horizontal = _joystick.Horizontal;
+            return horizontal;
         }
 
         public float GetAxisVertical()
         {
-            throw new System.NotImplementedException();
+            var vertical = _joystick.Vertical;
+            return vertical;
         }
     }
 }
