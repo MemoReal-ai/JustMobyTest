@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using _Project.Logic.Gameplay.ConfigsScripts;
 using _Project.Logic.Gameplay.Enemy;
+using _Project.Logic.Gameplay.LoseControlling;
 using _Project.Logic.Gameplay.PlayerLogic;
 using _Project.Logic.Gameplay.PlayerLogic.Shooting;
+using _Project.Logic.Gameplay.Service.CameraFollower;
 using _Project.Logic.Gameplay.Service.InputForGameplay;
 using _Project.Logic.Gameplay.Spawners;
 using _Project.Logic.Gameplay.Spawners.PointsToSpawn.Enemy;
@@ -12,6 +14,7 @@ using _Project.Logic.Meta.ObjectPool;
 using _Project.Logic.Meta.Service.DeviceIdentifier;
 using _Project.Logic.Meta.Shop;
 using _Project.Logic.Meta.UI.Health;
+using _Project.Logic.Meta.UI.Lose;
 using _Project.Logic.Meta.UI.Shop;
 using UnityEngine;
 using Zenject;
@@ -33,6 +36,8 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
         [SerializeField] private ContainerEnemyPoints _containerEnemyPoints;
         [SerializeField] private ShopView _shopView;
         [SerializeField] private UpgradesConfig _upgradesConfig;
+        [SerializeField] private Camera _camera;
+        [SerializeField] private LoseView _loseView;
         private readonly List<ObjectPool<EnemyAbstract>> _enemiesPool = new();
 
 
@@ -41,8 +46,15 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
             BindCheckerDevice();
             BindStartGame();
             BindingPlayer();
+            BindUILose();
             BindingUIPlayerStats();
             BindingUIShop();
+        }
+
+        private void BindUILose()
+        {
+            Container.Bind<LoseView>().FromComponentInNewPrefab(_loseView).AsSingle();
+            Container.BindInterfacesAndSelfTo<LoseViewModel>().AsSingle().NonLazy();
         }
 
 
@@ -79,12 +91,24 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
 
         private void BindStartGame()
         {
+            Container.BindInterfacesAndSelfTo<GameTimeController>().AsSingle().NonLazy();
+            Container.Bind<SceneRestarter>().AsSingle();
+            Container.Bind<Camera>().FromInstance(_camera).AsCached();
+            Container.BindInterfacesAndSelfTo<CameraFollowerService>().AsSingle().NonLazy();
             Container.Bind<ShopController>().AsSingle().NonLazy();
             Container.Bind<DeathView>().AsSingle().NonLazy();
             CreateAndBindingPools();
+            var enemy = CastEnemyPoolToList();
+            Container.Bind<List<EnemyAbstract>>().FromInstance(enemy).AsCached();
             Container.Bind<ContainerEnemyPoints>().FromInstance(_containerEnemyPoints).AsSingle();
             Container.BindInterfacesAndSelfTo<EnemySpawner>().AsSingle();
             Container.Bind<UpgradesConfig>().FromInstance(_upgradesConfig).AsCached();
+        }
+
+        private List<EnemyAbstract> CastEnemyPoolToList()
+        {
+            var enemies = CastPoolObjectInTType<EnemyAbstract>(_enemiesPool);
+            return enemies;
         }
 
 
@@ -92,7 +116,7 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
         {
             Container.BindInterfacesAndSelfTo<Player>().FromComponentInNewPrefab(_playerPrefab)
                 .UnderTransform(_pointToSpawnPlayer.PointToSpawn.transform).AsSingle().NonLazy();
-            Container.Bind<WalletPlayer>().AsCached();
+            Container.BindInterfacesAndSelfTo<WalletPlayer>().AsCached();
 
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
@@ -123,6 +147,21 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
         {
             var objPool = new ObjectPool<T>(prefab, size, container, autoExpand, instantiator);
             return objPool;
+        }
+
+        private List<T> CastPoolObjectInTType<T>(List<ObjectPool<T>> objectPool) where T : MonoBehaviour
+        {
+            var castList = new List<T>();
+            foreach (var ObjectPool in objectPool)
+            {
+                foreach (var creature in ObjectPool.Objects)
+                {
+                    var obj = creature as T;
+                    castList.Add(obj);
+                }
+            }
+
+            return castList;
         }
     }
 }

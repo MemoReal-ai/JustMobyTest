@@ -17,8 +17,8 @@ namespace _Project.Logic.Gameplay.Enemy
         protected float Speed;
 
         private DeathView _deathView;
-        private float _currentHealth;
-        private float _damage;
+        private int _currentHealth;
+        private int _damage;
         private int _reward;
         private bool _isDead;
 
@@ -59,7 +59,7 @@ namespace _Project.Logic.Gameplay.Enemy
             Behaviour();
         }
 
-        public void TakeDamage(float damage)
+        public void TakeDamage(int damage)
         {
             if (damage < 0)
             {

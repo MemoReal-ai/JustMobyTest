@@ -1,24 +1,58 @@
 using System;
+using System.Runtime.InteropServices;
 using _Project.Logic.Gameplay.Enemy;
+using _Project.Logic.Gameplay.Service.TimeForInteract;
 using UnityEngine;
+using Zenject;
 
 namespace _Project.Logic.Gameplay.PlayerLogic.Shooting
 {
     public class Bullet : MonoBehaviour
     {
-        public int Damage { get; private set; }
+        [SerializeField] private float _speed = 5f;
 
-        public void Setup(int damage)
+        private int _damage;
+        private ITimeService _timeService;
+
+        private readonly float _distanceToFade = 50f;
+        private Vector3 _startPosition;
+
+        [Inject]
+        public void Construct(ITimeService timeService)
         {
-            Damage = damage;
+            _timeService = timeService;
+        }
+        
+        private void Update()
+        {
+            transform.Translate(Vector3.forward * (_speed * _timeService.GetDeltaTime()));
+            CheakDistanceToFade();
+        }
+
+        private void CheakDistanceToFade()
+        {
+            var distance = _startPosition - transform.position;
+            if (Vector3.SqrMagnitude(distance) > _distanceToFade * _distanceToFade)
+            {
+                gameObject.SetActive(false);
+            }
         }
 
         private void OnCollisionEnter(Collision other)
         {
             if (other.gameObject.TryGetComponent(out EnemyAbstract enemy))
             {
-                enemy.TakeDamage(Damage);
+                enemy.TakeDamage(_damage);
+                gameObject.SetActive(false);
             }
+        }
+
+        public void Setup(int damage, Vector3 position, Quaternion rotation)
+        {
+            _damage = damage;
+            transform.position = position;
+            transform.rotation = rotation;
+            _startPosition = position;
         }
     }
 }
