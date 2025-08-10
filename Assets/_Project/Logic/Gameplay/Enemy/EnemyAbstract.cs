@@ -14,18 +14,18 @@ namespace _Project.Logic.Gameplay.Enemy
 
         [SerializeField] private EnemyConfig _config;
 
-        protected ITimeService TimeService;
         protected float Speed;
 
+        private DeathView _deathView;
         private float _currentHealth;
         private float _damage;
         private int _reward;
         private bool _isDead;
 
         [Inject]
-        public void Construct(ITimeService timeService)
+        public void Construct(DeathView deathView)
         {
-            TimeService = timeService;
+            _deathView = deathView;
         }
 
         private void Start()
@@ -71,17 +71,11 @@ namespace _Project.Logic.Gameplay.Enemy
 
             if (_currentHealth == 0 && !_isDead)
             {
+                _isDead = true;
                 OnDeath?.Invoke(_reward);
-                VisualDeadth();
-            }
-        }
 
-        private void VisualDeadth()
-        {
-            _isDead = true;
-            gameObject.GetComponent<Collider>().enabled = false;
-            transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack)
-                .OnComplete(() => gameObject.SetActive(false));
+                _deathView.InvokeDeathVisual(this);
+            }
         }
 
         protected abstract void Behaviour();

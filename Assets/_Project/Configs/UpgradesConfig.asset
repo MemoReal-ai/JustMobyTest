@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88be2027c473ca04681e8157a22f2d53, type: 3}
+  m_Name: UpgradesConfig
+  m_EditorClassIdentifier: 
+  <TresholdDamageUpgradeInPercent>k__BackingField: 200
+  <TresholdSpeedUpgradeInPercent>k__BackingField: 200
+  <TresholdHealthUpgradeInPercent>k__BackingField: 200
+  <NumericDamageUpgradePerLevelInPercent>k__BackingField: 5
+  <NumericHealthUpgradePerLevelInPercent>k__BackingField: 5
+  <NumericSpeedUpgradePerLevelInPercent>k__BackingField: 5
+  <HealthUpgradeCost>k__BackingField: 1
+  <DamageUpgradeCost>k__BackingField: 1
+  <SpeedUpgradeCost>k__BackingField: 1
+  <LevelDamage>k__BackingField: 0
+  <LevelHealth>k__BackingField: 0
+  <LevelSpeed>k__BackingField: 0

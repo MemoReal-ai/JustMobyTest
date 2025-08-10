@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Project.Logic.Gameplay.ConfigsScripts;
 using _Project.Logic.Gameplay.Enemy;
 using _Project.Logic.Gameplay.PlayerLogic;
 using _Project.Logic.Gameplay.PlayerLogic.Shooting;
@@ -9,7 +10,9 @@ using _Project.Logic.Gameplay.Spawners.PointsToSpawn.PlayerPoints;
 using _Project.Logic.Meta.Mobile;
 using _Project.Logic.Meta.ObjectPool;
 using _Project.Logic.Meta.Service.DeviceIdentifier;
+using _Project.Logic.Meta.Shop;
 using _Project.Logic.Meta.UI.Health;
+using _Project.Logic.Meta.UI.Shop;
 using UnityEngine;
 using Zenject;
 
@@ -28,8 +31,10 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private ContainersForPools _containersForPools;
         [SerializeField] private ContainerEnemyPoints _containerEnemyPoints;
-
+        [SerializeField] private ShopView _shopView;
+        [SerializeField] private UpgradesConfig _upgradesConfig;
         private readonly List<ObjectPool<EnemyAbstract>> _enemiesPool = new();
+
 
         public override void InstallBindings()
         {
@@ -37,7 +42,9 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
             BindStartGame();
             BindingPlayer();
             BindingUIPlayerStats();
+            BindingUIShop();
         }
+
 
         private void CreateAndBindingPools()
         {
@@ -72,21 +79,20 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
 
         private void BindStartGame()
         {
+            Container.Bind<ShopController>().AsSingle().NonLazy();
+            Container.Bind<DeathView>().AsSingle().NonLazy();
             CreateAndBindingPools();
             Container.Bind<ContainerEnemyPoints>().FromInstance(_containerEnemyPoints).AsSingle();
             Container.BindInterfacesAndSelfTo<EnemySpawner>().AsSingle();
+            Container.Bind<UpgradesConfig>().FromInstance(_upgradesConfig).AsCached();
         }
 
-        private void BindingUIPlayerStats()
-        {
-            Container.BindInterfacesAndSelfTo<HealthViewModel>().AsSingle().NonLazy();
-            Container.Bind<HealthView>().FromComponentInNewPrefab(_healthView).AsSingle();
-        }
 
         private void BindingPlayer()
         {
             Container.BindInterfacesAndSelfTo<Player>().FromComponentInNewPrefab(_playerPrefab)
                 .UnderTransform(_pointToSpawnPlayer.PointToSpawn.transform).AsSingle().NonLazy();
+            Container.Bind<WalletPlayer>().AsCached();
 
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
@@ -98,6 +104,18 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
             }
 
             Container.BindInterfacesAndSelfTo<PlayerController>().AsSingle().NonLazy();
+        }
+
+        private void BindingUIPlayerStats()
+        {
+            Container.BindInterfacesAndSelfTo<HealthViewModel>().AsSingle().NonLazy();
+            Container.Bind<HealthView>().FromComponentInNewPrefab(_healthView).AsSingle();
+        }
+
+        private void BindingUIShop()
+        {
+            Container.Bind<ShopView>().FromComponentInNewPrefab(_shopView).AsSingle();
+            Container.BindInterfacesAndSelfTo<ShopViewModel>().AsSingle().NonLazy();
         }
 
         private ObjectPool<T> CreateObjectPool<T>(T prefab, int size, Transform container, bool autoExpand,

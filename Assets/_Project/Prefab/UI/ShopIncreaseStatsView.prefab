@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.91047925, y: 0.88737047}
   m_AnchorMax: {x: 0.96400005, y: 0.9805185}
-  m_AnchoredPosition: {x: 3, y: -0.2999878}
+  m_AnchoredPosition: {x: 3, y: -0.30004883}
   m_SizeDelta: {x: -3, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &7545353384272543520
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 6348852922181711961}
   - component: {fileID: 6603760214319915605}
   m_Layer: 0
-  m_Name: Cost
+  m_Name: CostHelth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,8 +220,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -553,11 +553,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7314581629479516221}
+  m_Father: {fileID: 6502890197840526640}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 217, y: 49}
+  m_AnchoredPosition: {x: 217, y: -55.916737}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7384107619105465894
@@ -622,8 +622,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1440,7 +1440,7 @@ RectTransform:
   - {fileID: 8464932796099698053}
   - {fileID: 8765468874698878901}
   - {fileID: 6667690297486415554}
-  - {fileID: 1089925429604309159}
+  - {fileID: 6083487542795864956}
   m_Father: {fileID: 32987510089864428}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.05437782, y: 0.545}
@@ -1586,8 +1586,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1633,7 +1633,7 @@ GameObject:
   - component: {fileID: 5384482257039847944}
   - component: {fileID: 4279580431379097960}
   m_Layer: 0
-  m_Name: Cost (1)
+  m_Name: CostDamage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1720,8 +1720,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1888,7 +1888,7 @@ GameObject:
   - component: {fileID: 3262181879946571095}
   - component: {fileID: 5574968608914280966}
   m_Layer: 0
-  m_Name: Cost (2)
+  m_Name: CostSpeed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1975,8 +1975,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2792,6 +2792,7 @@ GameObject:
   - component: {fileID: 5398836761568923661}
   - component: {fileID: 1870797400322517613}
   - component: {fileID: 8258338825647036302}
+  - component: {fileID: 3430823865055715736}
   m_Layer: 5
   m_Name: ShopIncreaseStatsView
   m_TagString: Untagged
@@ -2883,6 +2884,32 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &3430823865055715736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6402981920560856539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b37389d7772f8a5458f4c3e029733b74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpgradeSpeedButton: {fileID: 5417762776244014353}
+  UpgradeDamageButton: {fileID: 351344537024053272}
+  ExitButton: {fileID: 567384754764919685}
+  UpgradeHealthButton: {fileID: 7161989053654605558}
+  ShowShopButton: {fileID: 8519626559891331311}
+  ApplyUpgradeButton: {fileID: 5781001391915781395}
+  _costHealth: {fileID: 6603760214319915605}
+  _costSpeed: {fileID: 5574968608914280966}
+  _costDamage: {fileID: 4279580431379097960}
+  _levelHealth: {fileID: 4467671270581175887}
+  _levelSpeed: {fileID: 2791850017208556556}
+  _levelDamage: {fileID: 5344889617173367499}
+  _points: {fileID: 8755773859003506235}
+  _shopPopup: {fileID: 2111552762734104701}
 --- !u!1 &6643045906962819885
 GameObject:
   m_ObjectHideFlags: 0
@@ -3016,7 +3043,7 @@ GameObject:
   - component: {fileID: 3635224730846757661}
   - component: {fileID: 2562925732967428582}
   m_Layer: 5
-  m_Name: Cost
+  m_Name: CostInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3168,11 +3195,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6502890197840526640}
+  m_Father: {fileID: 7314581629479516221}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 216.99988, y: -55}
+  m_AnchoredPosition: {x: 216.99988, y: 55.916737}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3443497370027603120
@@ -3237,8 +3264,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -3379,7 +3406,7 @@ RectTransform:
   - {fileID: 5079114606976571601}
   - {fileID: 6149640085747234549}
   - {fileID: 9060134943351637624}
-  - {fileID: 6083487542795864956}
+  - {fileID: 1089925429604309159}
   m_Father: {fileID: 32987510089864428}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.05437782, y: 0.39634553}
