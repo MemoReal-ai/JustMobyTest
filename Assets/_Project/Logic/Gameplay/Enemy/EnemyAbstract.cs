@@ -33,12 +33,9 @@ namespace _Project.Logic.Gameplay.Enemy
             Setup();
         }
 
-        protected virtual void Setup()
+        private void OnEnable()
         {
-            _currentHealth = _config.MaxHealth;
-            Speed = _config.Speed;
-            _damage = _config.Damage;
-            _reward = _config.Reward;
+            ResetVisual();
         }
 
         private void OnCollisionEnter(Collision other)
@@ -73,14 +70,35 @@ namespace _Project.Logic.Gameplay.Enemy
             {
                 _isDead = true;
                 OnDeath?.Invoke(_reward);
-
                 _deathView.InvokeDeathVisual(this);
             }
         }
 
+        private void OnDisable()
+        {
+            ResetVisual();
+        }
+
         protected abstract void Behaviour();
 
+        protected virtual void Setup()
+        {
+            _currentHealth = _config.MaxHealth;
+            Speed = _config.Speed;
+            _damage = _config.Damage;
+            _reward = _config.Reward;
+        }
 
-        public abstract void SetupBehaviourDependency(Vector3 position, Player target = null);
+        protected virtual void ResetVisual()
+        {
+            _isDead = false;
+            transform.position = Vector3.zero;
+            transform.rotation = Quaternion.identity;
+            transform.localScale = Vector3.one;
+            gameObject.GetComponent<Collider>().enabled = true;
+        }
+
+
+        public abstract void SetupBehaviourDependency(Vector3 position, Player target);
     }
 }

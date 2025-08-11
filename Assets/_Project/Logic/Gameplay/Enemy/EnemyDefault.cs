@@ -11,21 +11,21 @@ namespace _Project.Logic.Gameplay.Enemy
 
         protected override void Behaviour()
         {
-            if (_target == null)
-            {
-                _rigidbody.velocity = Vector3.zero;
-                return;
-            }
-
             var direction = (_target.transform.position - transform.position).normalized;
 
             _rigidbody.velocity = direction * Speed;
         }
 
-        public override void SetupBehaviourDependency(Vector3 position, Player target = null)
+        public override void SetupBehaviourDependency(Vector3 position, Player target)
         {
             transform.position = position;
             _target = target;
+        }
+
+        protected override void ResetVisual()
+        {
+            base.ResetVisual();
+            _target = null;
         }
 
         protected override void Setup()

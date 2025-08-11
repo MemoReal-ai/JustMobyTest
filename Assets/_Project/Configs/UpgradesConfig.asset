@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <DamageUpgradeModel>k__BackingField:
     <PercentValue>k__BackingField: 50
-    <Cost>k__BackingField: 0
+    <Cost>k__BackingField: 1
     <ThresholdValueUpgrade>k__BackingField: 500
     <Level>k__BackingField: 0
   <HealthUpgradeModel>k__BackingField:
-    <PercentValue>k__BackingField: 5
+    <PercentValue>k__BackingField: 10
     <Cost>k__BackingField: 1
-    <ThresholdValueUpgrade>k__BackingField: 200
+    <ThresholdValueUpgrade>k__BackingField: 500
     <Level>k__BackingField: 0
   <SpeedUpgradeModel>k__BackingField:
-    <PercentValue>k__BackingField: 5
+    <PercentValue>k__BackingField: 20
     <Cost>k__BackingField: 1
     <ThresholdValueUpgrade>k__BackingField: 200
     <Level>k__BackingField: 0
