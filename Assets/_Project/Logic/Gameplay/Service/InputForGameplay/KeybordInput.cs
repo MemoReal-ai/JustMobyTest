@@ -6,12 +6,12 @@ using Zenject;
 public class KeybordInput : IInput, ITickable
 {
     public Action OnShoot { get; set; }
-    
-    private KeyCode _buttonForShoot = KeyCode.KeypadEnter;
+
+    private readonly int _buttonMouseForShoot = 0;
 
     public void Tick()
     {
-        if (Input.GetKeyDown(_buttonForShoot))
+        if (Input.GetMouseButtonDown(_buttonMouseForShoot))
         {
             OnShoot?.Invoke();
         }
@@ -25,5 +25,10 @@ public class KeybordInput : IInput, ITickable
     public float GetAxisVertical()
     {
         return Input.GetAxis("Vertical");
+    }
+
+    public Vector3 GetRotationAxis()
+    {
+        return Input.mousePosition;
     }
 }

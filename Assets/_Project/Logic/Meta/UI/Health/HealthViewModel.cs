@@ -1,5 +1,6 @@
 using System;
 using _Project.Logic.Gameplay.PlayerLogic;
+using _Project.Logic.Meta.Shop;
 using R3;
 using Zenject;
 
@@ -7,8 +8,6 @@ namespace _Project.Logic.Meta.UI.Health
 {
     public class HealthViewModel : IInitializable, IDisposable
     {
-        private const float VALUE_FOR_TRANSLATE_PERCENTAGE_TO_NUMERIC = 100f;
-        
         private ReactiveProperty<float> _health = new ReactiveProperty<float>();
         private ReactiveProperty<float> _currentHealthText = new ReactiveProperty<float>();
         private ReactiveProperty<float> _maxHealthText = new ReactiveProperty<float>();
@@ -25,8 +24,7 @@ namespace _Project.Logic.Meta.UI.Health
         public void Initialize()
         {
             _player.OnHealthChanged += UpdateCurrentHealth;
-            UpdateMaxHealth();
-            UpdateCurrentHealth(_player.CurrentMaxHealth/VALUE_FOR_TRANSLATE_PERCENTAGE_TO_NUMERIC);
+            UpdateCurrentHealth(_player.CurrentMaxHealth, _player.CurrentMaxHealth);
             BindReactiveProperty();
         }
 
@@ -51,10 +49,11 @@ namespace _Project.Logic.Meta.UI.Health
             _maxHealthText.Subscribe(x => _healthView.SetMaxHealthText(_maxHealthText.Value));
         }
 
-        private void UpdateCurrentHealth(float value)
+        private void UpdateCurrentHealth(int currentValue, int maxValue)
         {
-            _health.Value = value;
-            _currentHealthText.Value = value * VALUE_FOR_TRANSLATE_PERCENTAGE_TO_NUMERIC;
+            _health.Value = (float)currentValue / maxValue;
+            _currentHealthText.Value = currentValue;
+            UpdateMaxHealth();
         }
 
         private void UpdateMaxHealth()

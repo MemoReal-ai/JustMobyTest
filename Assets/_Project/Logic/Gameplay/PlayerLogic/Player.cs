@@ -4,6 +4,7 @@ using _Project.Logic.Gameplay.PlayerLogic.Shooting;
 using _Project.Logic.Gameplay.Service.TimeForInteract;
 using _Project.Logic.Meta.ObjectPool;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 namespace _Project.Logic.Gameplay.PlayerLogic
@@ -11,22 +12,29 @@ namespace _Project.Logic.Gameplay.PlayerLogic
     [RequireComponent(typeof(Rigidbody))]
     public class Player : MonoBehaviour
     {
-        public Action<float> OnHealthChanged;
-        public Action OnDead;
+        public event Action<int, int> OnHealthChanged;
+        public event Action OnDead;
 
-        [SerializeField] private PlayerConfig _playerConfig;
         [SerializeField] private ShootPoint _shootPoint;
 
-
+        private PlayerConfig _playerConfig;
         private ObjectPool<Bullet> _bulletPool;
         private ITimeService _timeService;
-        private float _currentSpeed;
         private int _currentHealth;
-        private int _currentDamage;
         private float _rotationSpeed;
         private Rigidbody _rigidbody;
 
+        public float CurrentSpeed { get; private set; }
+        public int CurrentDamage { get; private set; }
         public int CurrentMaxHealth { get; private set; }
+
+        [Inject]
+        public void Construct(ITimeService timeService, ObjectPool<Bullet> bulletPool, PlayerConfig playerConfig)
+        {
+            _timeService = timeService;
+            _bulletPool = bulletPool;
+            _playerConfig = playerConfig;
+        }
 
         private void Start()
         {
@@ -34,12 +42,6 @@ namespace _Project.Logic.Gameplay.PlayerLogic
             SetupPlayerStats();
         }
 
-        [Inject]
-        public void Construct(ITimeService timeService, ObjectPool<Bullet> bulletPool)
-        {
-            _timeService = timeService;
-            _bulletPool = bulletPool;
-        }
 
         public void Move(Vector3 movement)
         {
@@ -49,19 +51,24 @@ namespace _Project.Logic.Gameplay.PlayerLogic
                 return;
             }
 
-            Quaternion targetRotation = Quaternion.LookRotation(movement);
-            _rigidbody.MoveRotation(Quaternion.RotateTowards(
-                _rigidbody.rotation,
-                targetRotation,
-                _rotationSpeed * _timeService.GetDeltaTime()));
-
-            Vector3 force = movement.normalized * (_currentSpeed * _timeService.GetDeltaTime());
+            Vector3 force = movement.normalized * (CurrentSpeed * _timeService.GetDeltaTime());
             _rigidbody.AddForce(force, ForceMode.VelocityChange);
 
-            if (_rigidbody.velocity.sqrMagnitude > _currentSpeed * _currentSpeed)
+            if (_rigidbody.velocity.sqrMagnitude > CurrentSpeed * CurrentSpeed)
             {
-                _rigidbody.velocity = _rigidbody.velocity.normalized * _currentSpeed;
+                _rigidbody.velocity = _rigidbody.velocity.normalized * CurrentSpeed;
             }
+        }
+
+        public void Rotate(Vector3 rotation)
+        {
+            if (rotation == Vector3.zero)
+            {
+                return;
+            }
+
+            Quaternion targetRotation = Quaternion.LookRotation(rotation);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _rotationSpeed*_timeService.GetDeltaTime());
         }
 
         public void TakeDamage(int damage)
@@ -73,7 +80,7 @@ namespace _Project.Logic.Gameplay.PlayerLogic
             }
 
             _currentHealth = Mathf.Max(_currentHealth - damage, 0);
-            OnHealthChanged?.Invoke((float)_currentHealth / _playerConfig.MaxHealth);
+            OnHealthChanged?.Invoke(_currentHealth, CurrentMaxHealth);
 
             if (_currentHealth == 0)
             {
@@ -83,27 +90,46 @@ namespace _Project.Logic.Gameplay.PlayerLogic
 
         private void SetupPlayerStats()
         {
-            _currentSpeed = _playerConfig.MaxSpeed;
+            CurrentSpeed = _playerConfig.MaxSpeed;
             CurrentMaxHealth = _playerConfig.MaxHealth;
-            _currentDamage = _playerConfig.CurrentDamage;
+            CurrentDamage = _playerConfig.CurrentDamage;
             _currentHealth = CurrentMaxHealth;
             _rotationSpeed = _playerConfig.RotationSpeed;
         }
 
         public void IncreaseHealth(int amount)
         {
+            if (amount < 0)
+            {
+                Debug.LogWarning("Health upgrade is negative");
+                return;
+            }
+
             _currentHealth += amount;
             CurrentMaxHealth += amount;
+            OnHealthChanged?.Invoke(_currentHealth, CurrentMaxHealth);
         }
 
         public void IncreaseDamage(int amount)
         {
-            _currentDamage += amount;
+            if (amount < 0)
+            {
+                Debug.LogWarning("Damage upgrade is negative");
+                return;
+            }
+
+            CurrentDamage += amount;
         }
 
-        public void IncreaseSpeed(int amount)
+        public void IncreaseSpeed(float amount)
         {
-            _currentSpeed += amount;
+            if (amount < 0)
+            {
+                Debug.LogWarning("Speed upgrade is negative");
+                return;
+            }
+
+            CurrentSpeed += amount;
         }
 
         public void Shoot()
@@ -115,7 +141,7 @@ namespace _Project.Logic.Gameplay.PlayerLogic
                 return;
             }
 
-            bullet.Setup(_currentDamage, _shootPoint.transform.position, _shootPoint.transform.rotation);
+            bullet.Setup(CurrentDamage, _shootPoint.transform.position, _shootPoint.transform.rotation);
         }
     }
 }

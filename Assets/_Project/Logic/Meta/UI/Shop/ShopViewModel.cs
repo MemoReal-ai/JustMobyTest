@@ -2,6 +2,7 @@ using System;
 using _Project.Logic.Gameplay.PlayerLogic;
 using _Project.Logic.Meta.Shop;
 using R3;
+using UnityEngine;
 using Zenject;
 
 namespace _Project.Logic.Meta.UI.Shop
@@ -19,6 +20,9 @@ namespace _Project.Logic.Meta.UI.Shop
         private readonly ReactiveProperty<int> _healthLevel = new();
         private readonly ReactiveProperty<int> _speedLevel = new();
         private readonly ReactiveProperty<int> _damageLevel = new();
+        private readonly ReactiveProperty<bool> _canBuyUpgradeSpeed = new();
+        private readonly ReactiveProperty<bool> _canBuyUpgradeDamage = new();
+        private readonly ReactiveProperty<bool> _canBuyUpgradeHealth = new();
 
         private readonly ReactiveCommand _upgradeHealthCommand = new();
         private readonly ReactiveCommand _upgradeSpeedCommand = new();
@@ -26,6 +30,11 @@ namespace _Project.Logic.Meta.UI.Shop
         private readonly ReactiveCommand _exitCommand = new();
         private readonly ReactiveCommand _showShopCommand = new();
         private readonly ReactiveCommand _applyUpgradesCommand = new();
+
+        private int _pendingLevelHealth = 0;
+        private int _pendingLevelSpeed = 0;
+        private int _pendingLevelDamage = 0;
+        private int _pendingSpendPoints = 0;
 
         public ShopViewModel(WalletPlayer wallet, ShopController shopManager, ShopView view)
         {
@@ -40,6 +49,7 @@ namespace _Project.Logic.Meta.UI.Shop
             SetupCommands();
             SetupBindings();
             UpdateAllValues();
+            UpdateInteractButtons();
         }
 
         public void Dispose()
@@ -65,16 +75,17 @@ namespace _Project.Logic.Meta.UI.Shop
         private void UpdatePoints(int points)
         {
             _points.Value = points;
+            UpdateInteractButtons();
         }
 
         private void SetupCommands()
         {
-            _upgradeHealthCommand.Subscribe(_ => UpgradeHealth());
-            _upgradeSpeedCommand.Subscribe(_ => UpgradeSpeed());
-            _upgradeDamageCommand.Subscribe(_ => UpgradeDamage());
-            _exitCommand.Subscribe(_ => _view.HideShop());
+            _upgradeHealthCommand.Subscribe(_ => PreviewUpgradeHealth());
+            _upgradeSpeedCommand.Subscribe(_ => PreviewUpgradeSpeed());
+            _upgradeDamageCommand.Subscribe(_ => PreviewUpgradeDamage());
+            _exitCommand.Subscribe(_ => ExitShop());
             _showShopCommand.Subscribe(_ => _view.ShowShop());
-            _applyUpgradesCommand.Subscribe(_ => _view.HideShop());
+            _applyUpgradesCommand.Subscribe(_ => ApplyUpgrades());
         }
 
         private void SetupBindings()
@@ -87,7 +98,7 @@ namespace _Project.Logic.Meta.UI.Shop
 
             _view.UpgradeDamageButton.OnClickAsObservable()
                 .Subscribe(_upgradeDamageCommand.Execute);
-          
+
             _view.ExitButton.OnClickAsObservable()
                 .Subscribe(_exitCommand.Execute);
 
@@ -97,13 +108,55 @@ namespace _Project.Logic.Meta.UI.Shop
             _view.ApplyUpgradeButton.OnClickAsObservable()
                 .Subscribe(_applyUpgradesCommand.Execute);
 
-            _points.Subscribe(p => _view.SetPoints(p));
-            _healthLevel.Subscribe(l => _view.SetLevelHealth(l));
-            _speedLevel.Subscribe(l => _view.SetLevelSpeed(l));
-            _damageLevel.Subscribe(l => _view.SetLevelDamage(l));
-            _healthCost.Subscribe(c => _view.SetCostHealth(c));
-            _speedCost.Subscribe(c => _view.SetCostSpeed(c));
-            _damageCost.Subscribe(c => _view.SetCostDamage(c));
+            _points.Subscribe(x => _view.SetPoints(x));
+            _healthLevel.Subscribe(x => _view.SetLevelHealth(x));
+            _speedLevel.Subscribe(x => _view.SetLevelSpeed(x));
+            _damageLevel.Subscribe(x => _view.SetLevelDamage(x));
+            _healthCost.Subscribe(x => _view.SetCostHealth(x));
+            _speedCost.Subscribe(x => _view.SetCostSpeed(x));
+            _damageCost.Subscribe(x => _view.SetCostDamage(x));
+            _canBuyUpgradeDamage.Subscribe(x => _view.UpgradeDamageButton.interactable = x);
+            _canBuyUpgradeSpeed.Subscribe(x => _view.UpgradeSpeedButton.interactable = x);
+            _canBuyUpgradeHealth.Subscribe(x => _view.UpgradeHealthButton.interactable = x);
+        }
+
+        private void ExitShop()
+        {
+            _view.HideShop();
+            ResetPendingValue();
+            UpdateAllValues();
+            UpdateInteractButtons();
+        }
+
+        private void ApplyUpgrades()
+        {
+            _wallet.Spend(_pendingSpendPoints);
+
+            for (int i = 0; i < _pendingLevelDamage; i++)
+            {
+                _shopController.UpgradeDamage();
+            }
+
+            for (int i = 0; i < _pendingLevelSpeed; i++)
+            {
+                _shopController.UpgradeSpeed();
+            }
+
+            for (int i = 0; i < _pendingLevelHealth; i++)
+            {
+                _shopController.UpgradeHealth();
+            }
+            // 3 цикла не айс конечно, но при требовании улучшить я думаю можно придумать :)
+
+            ExitShop();
+        }
+
+        private void ResetPendingValue()
+        {
+            _pendingLevelHealth = 0;
+            _pendingLevelSpeed = 0;
+            _pendingLevelDamage = 0;
+            _pendingSpendPoints = 0;
         }
 
         private void UpdateAllValues()
@@ -117,31 +170,55 @@ namespace _Project.Logic.Meta.UI.Shop
             _damageCost.Value = _shopController.DamageUpgradeCost;
         }
 
-        private void UpgradeHealth()
+        private void PreviewUpgradeHealth()
         {
-            if (!_wallet.TrySpend(_shopController.HealthUpgradeCost)) return;
-
-            _shopController.TryUpgradeHealth();
-            _healthLevel.Value = _shopController.CurrentHealthLevel;
-            _healthCost.Value = _shopController.HealthUpgradeCost;
+            PreviewUpgrade(_shopController.HealthUpgradeCost,
+                ref _pendingLevelHealth,
+                _shopController.CurrentHealthLevel,
+                _healthLevel);
         }
 
-        private void UpgradeSpeed()
+        private void PreviewUpgradeSpeed()
         {
-            if (!_wallet.TrySpend(_shopController.SpeedUpgradeCost)) return;
-
-            _shopController.TryUpgradeSpeed();
-            _speedLevel.Value = _shopController.CurrentSpeedLevel;
-            _speedCost.Value = _shopController.SpeedUpgradeCost;
+            PreviewUpgrade(_shopController.SpeedUpgradeCost,
+                ref _pendingLevelSpeed,
+                _shopController.CurrentSpeedLevel,
+                _speedLevel);
         }
 
-        private void UpgradeDamage()
+        private void PreviewUpgradeDamage()
         {
-            if (!_wallet.TrySpend(_shopController.DamageUpgradeCost)) return;
+            PreviewUpgrade(_shopController.DamageUpgradeCost,
+                ref _pendingLevelDamage,
+                _shopController.CurrentDamageLevel,
+                _damageLevel);
+        }
 
-            _shopController.TryUpgradeDamage();
-            _damageLevel.Value = _shopController.CurrentDamageLevel;
-            _damageCost.Value = _shopController.DamageUpgradeCost;
+        private bool HasBuy(int cost)
+        {
+            return (_wallet.GetPoints() - _pendingSpendPoints) >= cost;
+        }
+
+        private void PreviewUpgrade(int cost, ref int pendingLevel, int currentLevel,
+            ReactiveProperty<int> levelProperty)
+        {
+            if (HasBuy(cost) == false)
+            {
+                return;
+            }
+
+            pendingLevel++;
+            levelProperty.Value = currentLevel + pendingLevel;
+            _pendingSpendPoints += cost;
+            _points.Value = _wallet.GetPoints() - _pendingSpendPoints;
+            UpdateInteractButtons();
+        }
+
+        private void UpdateInteractButtons()
+        {
+            _canBuyUpgradeDamage.Value = HasBuy(_shopController.DamageUpgradeCost);
+            _canBuyUpgradeHealth.Value = HasBuy(_shopController.HealthUpgradeCost);
+            _canBuyUpgradeSpeed.Value = HasBuy(_shopController.SpeedUpgradeCost);
         }
     }
 }

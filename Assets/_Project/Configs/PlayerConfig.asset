@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: PlayerConfig
   m_EditorClassIdentifier: 
   <MaxHealth>k__BackingField: 100
-  <MaxSpeed>k__BackingField: 20
-  <CurrentDamage>k__BackingField: 5
-  <RotationSpeed>k__BackingField: 300
+  <MaxSpeed>k__BackingField: 5
+  <CurrentDamage>k__BackingField: 3
+  <RotationSpeed>k__BackingField: 1500

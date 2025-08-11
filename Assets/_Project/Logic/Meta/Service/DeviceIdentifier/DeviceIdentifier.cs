@@ -20,5 +20,7 @@ namespace _Project.Logic.Meta.Service.DeviceIdentifier
                 Object.Instantiate(_mobileTools);
             }
         }
+        
+        // Пример класса если хотите прям гибко, гибко))
     }
 }

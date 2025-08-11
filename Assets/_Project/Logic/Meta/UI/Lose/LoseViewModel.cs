@@ -9,13 +9,14 @@ namespace _Project.Logic.Meta.UI.Lose
 {
     public class LoseViewModel : IInitializable, IDisposable
     {
+        private readonly ReactiveCommand _loseCommand = new ReactiveCommand();
         private readonly LoseView _view;
         private readonly SceneRestarter _sceneRestarter;
-        private readonly ReactiveCommand _loseCommand = new ReactiveCommand();
         private readonly Player _player;
         private readonly GameTimeController _gameTimeController;
 
-        public LoseViewModel(LoseView view, SceneRestarter sceneRestarter, Player player, GameTimeController gameTimeController)
+        public LoseViewModel(LoseView view, SceneRestarter sceneRestarter, Player player,
+            GameTimeController gameTimeController)
         {
             _view = view;
             _sceneRestarter = sceneRestarter;
@@ -45,9 +46,8 @@ namespace _Project.Logic.Meta.UI.Lose
 
         private void Show()
         {
-            
-                _view.Show();
-                _gameTimeController.LoseGame();
+            _view.Show();
+            _gameTimeController.LoseGame();
         }
 
         private void RestartGame()

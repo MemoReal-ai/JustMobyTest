@@ -38,9 +38,9 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
         [SerializeField] private UpgradesConfig _upgradesConfig;
         [SerializeField] private Camera _camera;
         [SerializeField] private LoseView _loseView;
+        [SerializeField] private PlayerConfig _playerConfig;
         private readonly List<ObjectPool<EnemyAbstract>> _enemiesPool = new();
-
-
+        
         public override void InstallBindings()
         {
             BindCheckerDevice();
@@ -56,8 +56,7 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
             Container.Bind<LoseView>().FromComponentInNewPrefab(_loseView).AsSingle();
             Container.BindInterfacesAndSelfTo<LoseViewModel>().AsSingle().NonLazy();
         }
-
-
+        
         private void CreateAndBindingPools()
         {
             var instantiator = Container.Resolve<IInstantiator>();
@@ -82,7 +81,6 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
             Container.Bind<ObjectPool<Bullet>>().FromInstance(bullet).AsSingle().NonLazy();
         }
 
-
         private void BindCheckerDevice()
         {
             Container.Bind<MobileTools>().FromInstance(_mobileTools).AsSingle();
@@ -95,7 +93,7 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
             Container.Bind<SceneRestarter>().AsSingle();
             Container.Bind<Camera>().FromInstance(_camera).AsCached();
             Container.BindInterfacesAndSelfTo<CameraFollowerService>().AsSingle().NonLazy();
-            Container.Bind<ShopController>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<ShopController>().AsSingle().NonLazy();
             Container.Bind<DeathView>().AsSingle().NonLazy();
             CreateAndBindingPools();
             var enemy = CastEnemyPoolToList();
@@ -110,10 +108,10 @@ namespace _Project.Logic.Infrastructure.Installers.SceneInstallers
             var enemies = CastPoolObjectInTType<EnemyAbstract>(_enemiesPool);
             return enemies;
         }
-
-
+        
         private void BindingPlayer()
         {
+            Container.Bind<PlayerConfig>().FromInstance(_playerConfig).AsSingle();
             Container.BindInterfacesAndSelfTo<Player>().FromComponentInNewPrefab(_playerPrefab)
                 .UnderTransform(_pointToSpawnPlayer.PointToSpawn.transform).AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<WalletPlayer>().AsCached();

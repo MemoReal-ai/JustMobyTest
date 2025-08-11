@@ -1,27 +1,26 @@
 using System;
+using UnityEngine;
 
 namespace _Project.Logic.Gameplay.Service.InputForGameplay
 {
+    //This class create for example 
     public class MobileInput : IInput
     {
+        //Some code
         public Action OnShoot { get; set; }
-        
-        private readonly Joystick _joystick;
-        public MobileInput(Joystick joystick)
-        {
-            _joystick = joystick;
-        }
-        
         public float GetAxisHorizontal()
         {
-            var horizontal = _joystick.Horizontal;
-            return horizontal;
+            return 0; 
         }
 
         public float GetAxisVertical()
         {
-            var vertical = _joystick.Vertical;
-            return vertical;
+            return 0;
+        }
+
+        public Vector3 GetRotationAxis()
+        {
+            return Vector3.zero;
         }
     }
 }

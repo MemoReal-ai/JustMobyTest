@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace _Project.Logic.Gameplay.Service.InputForGameplay
 {
@@ -7,5 +8,6 @@ namespace _Project.Logic.Gameplay.Service.InputForGameplay
         Action OnShoot { get; set; }
         float GetAxisHorizontal();
         float GetAxisVertical();
+        Vector3 GetRotationAxis();
     }
 }

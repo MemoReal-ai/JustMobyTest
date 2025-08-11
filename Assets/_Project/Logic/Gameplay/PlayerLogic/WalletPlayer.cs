@@ -35,7 +35,7 @@ namespace _Project.Logic.Gameplay.PlayerLogic
             }
         }
 
-        public void AddPoints(int amount)
+        private void AddPoints(int amount)
         {
             if (amount < 0)
                 throw new ArgumentException("Amount must be positive");
@@ -46,7 +46,7 @@ namespace _Project.Logic.Gameplay.PlayerLogic
 
         private bool CanSpend(int amount) => Points >= amount;
 
-        public bool TrySpend(int amount)
+        public bool Spend(int amount)
         {
             if (CanSpend(amount) == false)
             {
