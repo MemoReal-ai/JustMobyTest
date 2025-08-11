@@ -48,6 +48,7 @@ namespace _Project.Logic.Gameplay.Spawners
             var enemy = _enemyPools[numberTypeEnemy].GetObject();
             if (enemy == null)
             {
+                _canSpawn = true;
                 return;
             }
             enemy.SetupBehaviourDependency(_container.SpawnPoints[indexSpawnPosition].position, _player);
